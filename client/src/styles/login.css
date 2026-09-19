@@ -1,0 +1,90 @@
+.login-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  min-height: 100vh;
+  align-items: center;
+}
+
+.login-copy {
+  padding: 48px 40px 64px;
+}
+
+.login-title {
+  font-size: clamp(3.2rem, 7vw, 6.2rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  margin: 0 0 18px;
+}
+
+.login-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  overflow: hidden;
+}
+
+.login-blob {
+  position: absolute;
+  right: 12%;
+  top: 12%;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sunflower) 80%, white);
+  filter: blur(1px);
+}
+
+.login-hero-card {
+  position: relative;
+  width: min(500px, 100%);
+  transform: rotate(2deg);
+  border: 2px solid var(--ink);
+  border-radius: 40px;
+  background: #f6e6c6;
+  padding: 22px;
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.login-hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid color-mix(in srgb, var(--ink) 15%, transparent);
+  padding-bottom: 14px;
+}
+
+.login-hero-body {
+  margin-top: 22px;
+  border-radius: 20px;
+  background: #fff5dc;
+  padding: 24px;
+}
+
+.login-hero-foot {
+  margin-top: 22px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.progress-track {
+  margin-top: 22px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ead8ae;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--beet);
+}
+
+@media (max-width: 860px) {
+  .login-grid { grid-template-columns: 1fr; }
+  .login-art { display: none; }
+  .login-copy { padding: 32px 20px 48px; }
+}

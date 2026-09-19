@@ -1,0 +1,14 @@
+node_modules/
+dist/
+client/dist/
+server/dist/
+data/*
+!data/.gitkeep
+*.db
+*.db-journal
+.env
+.DS_Store
+coverage/
+.vite/
+uploads/
+*.log
