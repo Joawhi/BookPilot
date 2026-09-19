@@ -183,6 +183,9 @@ a.paper-card:hover {
 }
 
 .dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border: 2px dashed color-mix(in srgb, var(--beet) 50%, var(--line));
   border-radius: 24px;
   background: color-mix(in srgb, var(--beet) 6%, var(--paper));
@@ -190,7 +193,6 @@ a.paper-card:hover {
   text-align: center;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s ease;
-  overflow: visible;
 }
 
 .dropzone img {

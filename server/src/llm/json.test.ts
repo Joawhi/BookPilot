@@ -12,4 +12,8 @@ describe("parseLlmJson", () => {
   it("extracts object from prose", () => {
     expect(parseLlmJson("Sure: {\"hello\":\"x\"} thanks", schema).hello).toBe("x");
   });
+
+  it("rejects empty output", () => {
+    expect(() => parseLlmJson("   ", schema)).toThrow(/empty output/);
+  });
 });

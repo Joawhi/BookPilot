@@ -17,7 +17,7 @@ import { progressRouter } from "./routes/progress.ts";
 
 export function createApp() {
   const app = express();
-  app.use(cors({ origin: config.clientOrigin, credentials: true }));
+  app.use(cors({ origin: config.isProd ? true : config.clientOrigin, credentials: true }));
   app.use(express.json({ limit: "2mb" }));
 
   app.get("/api/health", (_req, res) => {

@@ -49,12 +49,18 @@ Academic references always come from Semantic Scholar, OpenAlex and arXiv — th
 
 ## Replit
 
-1. Import the repo.
-2. Set secrets: `JWT_SECRET`, optionally `OPENAI_API_KEY`.
-3. Run `npm install && npx prisma db push && npm run dev`.
-4. If Replit assigns `PORT`, the server already honors it. The Vite config proxies `/api`.
+Do **not** commit `.env` or paste the Groq key into source / `.replit`. Replit Secrets become `process.env` at runtime.
 
-SQLite is the default because it is the fastest to boot on Replit. To use PostgreSQL later, change `provider` in `prisma/schema.prisma` to `postgresql` and set `DATABASE_URL` to your Postgres URL, then `npx prisma db push`.
+1. Import the GitHub repo (or Deploy from `main`).
+2. **Tools → Secrets** — add:
+   - `OPENAI_API_KEY` = your Groq key (`gsk_...`)
+   - `OPENAI_BASE_URL` = `https://api.groq.com/openai/v1` (optional if the key starts with `gsk_`)
+   - `OPENAI_MODEL` = `openai/gpt-oss-20b` (optional with a Groq key)
+   - `JWT_SECRET` = a long random string
+3. For **Deployments**, also set `NODE_ENV` = `production`. The existing `.replit` `[deployment]` command builds the Vite app and serves it from Express.
+4. Confirm `/api/health` returns `"llm": true`.
+
+SQLite is the default because it is the fastest to boot on Replit. Put `data/` on a persistent disk so the DB and PDFs survive restarts. To use PostgreSQL later, change `provider` in `prisma/schema.prisma` to `postgresql` and set `DATABASE_URL`, then `npx prisma db push`.
 
 ## Production notes
 

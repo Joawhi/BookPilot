@@ -16,6 +16,14 @@ function geminiNativeUrl() {
   return null;
 }
 
+function isGroq() {
+  return /groq\.com/i.test(config.openaiBaseUrl);
+}
+
+function isReasoningModel(model: string) {
+  return /gpt-oss|o1|o3|qwq/i.test(model);
+}
+
 async function chatGemini(system: string, user: string): Promise<string> {
   const url = geminiNativeUrl();
   if (!url) throw new Error("Not a Gemini endpoint");
@@ -44,78 +52,142 @@ async function chatGemini(system: string, user: string): Promise<string> {
   return data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
 }
 
-const GROQ_MODEL_FALLBACKS = [
-  "openai/gpt-oss-20b",
-  "openai/gpt-oss-120b",
-  "llama-3.1-8b-instant",
-];
+type Effort = "none" | "low" | "medium";
 
-async function chatOpenAiCompat(system: string, user: string): Promise<string> {
-  const models = [config.openaiModel, ...GROQ_MODEL_FALLBACKS.filter((m) => m !== config.openaiModel)];
+type CompatPayload = {
+  model: string;
+  temperature: number;
+  max_completion_tokens: number;
+  reasoning_effort?: Effort;
+  response_format?: { type: "json_object" };
+  messages: { role: "system" | "user"; content: string }[];
+};
+
+type ChatChoice = {
+  finish_reason?: string;
+  message?: { content?: string | null; reasoning?: string | null };
+};
+
+function messageText(data: { choices?: ChatChoice[] }): { text: string; finish: string } {
+  const choice = data.choices?.[0];
+  const msg = choice?.message ?? {};
+  const text = [msg.content, msg.reasoning].filter((part) => typeof part === "string" && part.trim()).join("\n");
+  return { text, finish: choice?.finish_reason ?? "unknown" };
+}
+
+async function postChat(payload: CompatPayload): Promise<{ ok: true; text: string; finish: string } | { ok: false; error: string }> {
+  const headers = {
+    Authorization: `Bearer ${config.openaiKey}`,
+    "Content-Type": "application/json",
+  };
+  let res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const { response_format: _format, ...withoutFormat } = payload;
+    res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(withoutFormat),
+    });
+  }
+  if (!res.ok) {
+    const body = await res.text();
+    return {
+      ok: false,
+      error: `LLM HTTP ${res.status}: ${body.slice(0, 400)}`,
+    };
+  }
+  const data = (await res.json()) as { choices?: ChatChoice[] };
+  const { text, finish } = messageText(data);
+  return { ok: true, text, finish };
+}
+
+async function completeModel(model: string, system: string, user: string): Promise<string> {
+  const reasoning = isGroq() && isReasoningModel(model);
+  const attempts: { effort?: Effort; tokens: number }[] = reasoning
+    ? [
+        { effort: "low", tokens: 8192 },
+        { effort: "none", tokens: 16384 },
+      ]
+    : [{ tokens: 4096 }];
+
   let lastError = "LLM request failed";
-  for (const model of models) {
-    const payload = {
+  for (const attempt of attempts) {
+    const payload: CompatPayload = {
       model,
       temperature: 0.4,
-      response_format: { type: "json_object" as const },
+      max_completion_tokens: attempt.tokens,
+      response_format: { type: "json_object" },
       messages: [
-        { role: "system" as const, content: system },
-        { role: "user" as const, content: user },
+        { role: "system", content: system },
+        { role: "user", content: user },
       ],
     };
-    let res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${config.openaiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const { response_format: _format, ...withoutFormat } = payload;
-      res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${config.openaiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(withoutFormat),
-      });
-    }
-    if (res.ok) {
-      if (model !== config.openaiModel) {
-        console.warn(`LLM model ${config.openaiModel} unavailable, using ${model}`);
-      }
-      const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      return data.choices?.[0]?.message?.content ?? "";
-    }
-    const body = await res.text();
-    lastError = `LLM HTTP ${res.status}: ${body.slice(0, 400)}`;
-    if (!/model_not_found|does not exist|not have access/i.test(body)) {
+    if (attempt.effort) payload.reasoning_effort = attempt.effort;
+    const result = await postChat(payload);
+    if (!result.ok) {
+      lastError = result.error;
       throw new Error(lastError);
     }
+    if (result.text.trim()) return result.text;
+    lastError = `LLM returned empty output (finish_reason=${result.finish})`;
+    console.warn(lastError, { model, effort: attempt.effort });
   }
   throw new Error(lastError);
 }
 
-export async function chatJson<T>(
-  system: string,
-  user: string,
-  schema: z.ZodType<T>,
-): Promise<T> {
+const GROQ_JSON_FALLBACKS = ["llama-3.1-8b-instant"];
+
+function jsonModels() {
+  const extras = isGroq() ? GROQ_JSON_FALLBACKS : [];
+  return [config.openaiModel, ...extras.filter((m) => m !== config.openaiModel)];
+}
+
+function canFallback(message: string) {
+  return /model_not_found|does not exist|not have access|empty output|non-JSON|ZodError|invalid_type/i.test(message);
+}
+
+let llmGate: Promise<void> = Promise.resolve();
+
+function withLlmGate<T>(fn: () => Promise<T>): Promise<T> {
+  const run = llmGate.then(fn, fn);
+  llmGate = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+export async function chatJson<T>(system: string, user: string, schema: z.ZodType<T>): Promise<T> {
   if (!llmEnabled()) {
     throw new Error("OPENAI_API_KEY missing");
   }
-  let content: string;
-  if (geminiNativeUrl()) {
-    try {
-      content = await chatGemini(system, user);
-    } catch (err) {
-      console.warn("gemini native failed, trying OpenAI-compat", err);
-      content = await chatOpenAiCompat(system, user);
+  return withLlmGate(async () => {
+    if (geminiNativeUrl()) {
+      try {
+        return parseLlmJson(await chatGemini(system, user), schema);
+      } catch (err) {
+        console.warn("gemini native failed, trying OpenAI-compat", err);
+      }
     }
-  } else {
-    content = await chatOpenAiCompat(system, user);
-  }
-  return parseLlmJson(content, schema);
+    let lastError = "LLM request failed";
+    for (const model of jsonModels()) {
+      try {
+        const content = await completeModel(model, system, user);
+        const parsed = parseLlmJson(content, schema);
+        if (model !== config.openaiModel) {
+          console.warn(`LLM model ${config.openaiModel} produced unusable JSON, using ${model}`);
+        }
+        return parsed;
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : "LLM request failed";
+        console.warn("LLM attempt failed", model, lastError.slice(0, 180));
+        if (!canFallback(lastError)) throw err instanceof Error ? err : new Error(lastError);
+      }
+    }
+    throw new Error(lastError);
+  });
 }

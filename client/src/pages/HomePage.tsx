@@ -74,7 +74,6 @@ export function HomePage() {
             upload(e.dataTransfer.files);
           }}
         >
-          <img src="/art/upload-harvest.png" alt="" style={{ width: "min(520px, 100%)", borderRadius: 20 }} />
           <h2>Drop PDFs to start a study set</h2>
           <p className="muted">Up to 5 files. Born-digital or OCR’d — scanned images without text will get a friendly warning.</p>
           <input
