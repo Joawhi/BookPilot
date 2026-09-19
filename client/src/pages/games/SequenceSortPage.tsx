@@ -120,7 +120,7 @@ export function SequenceSortPage() {
       allowedPowerups={["freeze_time", "double_down"]}
       onPowerup={onPowerup}
     >
-      <div className="card embroidered" style={{ padding: 20 }}>
+      <div className="paper-card" style={{ padding: 20 }}>
         <p className="muted">Drag the steps into the right order, then lock it in.</p>
         {order.map((oid, i) => {
           const item = puzzle.items.find((x) => x.id === oid);

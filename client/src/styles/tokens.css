@@ -1,19 +1,23 @@
 :root {
-  --cream: #f4e8d0;
-  --paper: #fbf3e3;
-  --ink: #2b2118;
-  --ink-soft: #5c4c3d;
-  --beet: #c44536;
-  --beet-deep: #8f2e24;
-  --sunflower: #e8b923;
-  --leaf: #3d6b3a;
-  --leaf-bright: #5a9448;
-  --deep: #1e3a5f;
+  --cream: #f3efe4;
+  --paper: #f8f5ee;
+  --ink: #1e1f3d;
+  --ink-soft: #5c5d7a;
+  --beet: #cb3a32;
+  --beet-deep: #a82e28;
+  --sunflower: #f4c53a;
+  --leaf: #5e6e38;
+  --leaf-bright: #7a8c4a;
+  --deep: #2f5a85;
   --plum: #7b3b4a;
-  --line: #2b2118;
-  --shadow: 4px 6px 0 rgba(43, 33, 24, 0.18);
-  --radius: 24px;
-  --font-serif: "Fraunces", "Palatino Linotype", Palatino, serif;
-  --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
+  --line: #d4c6a8;
+  --muted: #e8dfcd;
+  --sidebar: #1e1f3d;
+  --sidebar-fg: #f3efe4;
+  --shadow: 0 5px 0 rgba(212, 198, 168, 0.65), 0 16px 30px rgba(30, 31, 61, 0.07);
+  --shadow-scribble: 4px 4px 0 var(--ink);
+  --radius: 16px;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "DM Sans", "Segoe UI", sans-serif;
   --reader-max: 920px;
 }

@@ -28,10 +28,11 @@ export function NotesProgressPage() {
   return (
     <AppShell>
       <div className="page">
+        <p className="eyebrow">your trail</p>
         <p className="muted"><Link to={`/sets/${id}`}>← Hub</Link></p>
         <h1>Notes & Progress</h1>
         <div className="grid-2">
-          <div className="card" style={{ padding: 18 }}>
+          <div className="paper-card" style={{ padding: 18 }}>
             <h3>Total points</h3>
             <p style={{ fontSize: "2rem", fontFamily: "var(--font-serif)" }}>{data.totalPoints}</p>
             <h3>Best scores</h3>
@@ -41,7 +42,7 @@ export function NotesProgressPage() {
               ))}
             </ul>
           </div>
-          <div className="card" style={{ padding: 18 }}>
+          <div className="paper-card" style={{ padding: 18 }}>
             <h3>Accuracy over time</h3>
             <AccuracyChart points={data.accuracyOverTime} />
           </div>
@@ -64,7 +65,7 @@ export function NotesProgressPage() {
         {data.notes.length === 0 ? <p className="muted">No notes yet — select a passage in the reader.</p> : null}
         <div style={{ display: "grid", gap: 12 }}>
           {data.notes.map((n) => (
-            <article key={n.id} className="card" style={{ padding: 16 }}>
+            <article key={n.id} className="paper-card" style={{ padding: 16 }}>
               {n.flagged ? <span className="chip" style={{ background: "#f7d5cf" }}>confusing</span> : null}
               <div className="muted">{n.documentName} · p.{n.page}</div>
               <p>{n.passage}</p>
@@ -79,7 +80,7 @@ export function NotesProgressPage() {
         <h2 style={{ marginTop: 28 }}>Session recaps</h2>
         {data.recaps.length === 0 ? <p className="muted">End a reading session to grow a recap here.</p> : null}
         {data.recaps.map((r) => (
-          <article key={r.id} className="card" style={{ padding: 16, marginBottom: 12 }}>
+          <article key={r.id} className="paper-card" style={{ padding: 16, marginBottom: 12 }}>
             <div className="muted">{new Date(r.endedAt).toLocaleString()}</div>
             <pre style={{ whiteSpace: "pre-wrap", fontFamily: "var(--font-sans)" }}>{r.recap}</pre>
             <PaperList papers={r.references} />

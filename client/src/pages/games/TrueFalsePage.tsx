@@ -104,7 +104,7 @@ export function TrueFalsePage() {
       allowedPowerups={["freeze_time", "double_down"]}
       onPowerup={onPowerup}
     >
-      <div className="card embroidered" style={{ padding: 28, minHeight: 220 }}>
+      <div className="paper-card" style={{ padding: 28, minHeight: 220 }}>
         <h2>{item.text}</h2>
         {flash ? <p className="muted">{flash}</p> : null}
         <div style={{ display: "flex", gap: 12, marginTop: 20 }}>

@@ -100,7 +100,7 @@ export function FillBlankPage() {
       allowedPowerups={["freeze_time", "double_down"]}
       onPowerup={onPowerup}
     >
-      <div className="card embroidered" style={{ padding: 24 }}>
+      <div className="paper-card" style={{ padding: 24 }}>
         <h2>{item.sentence}</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
           {item.bank.map((w) => (

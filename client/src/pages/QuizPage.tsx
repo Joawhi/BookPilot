@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { AppShell } from "../components/layout/AppShell";
 import { GameShell, useGameTimer } from "../components/games/GameShell";
 import { apiGet, apiPost } from "../api/client";
 import { celebrate } from "../lib/celebrate";
@@ -137,17 +138,20 @@ export function QuizPage() {
 
   if (error) {
     return (
-      <div className="page">
-        <div className="error-banner">{error}</div>
-        <Link to={`/sets/${id}`}>Back to hub</Link>
-      </div>
+      <AppShell>
+        <div className="page">
+          <div className="error-banner">{error}</div>
+          <Link to={`/sets/${id}`}>Back to hub</Link>
+        </div>
+      </AppShell>
     );
   }
 
   if (done) {
     return (
+      <AppShell>
       <div className="page">
-        <img src="/art/celebrate.png" alt="" style={{ width: 360, maxWidth: "100%", borderRadius: 24, border: "3px solid var(--ink)" }} />
+        <img src="/art/celebrate.png" alt="" style={{ width: 360, maxWidth: "100%", borderRadius: 24 }} />
         <h1>Harvest complete</h1>
         <p>
           Score <strong>{score}</strong> · Accuracy {Math.round(accuracy * 100)}% · Best streak {bestStreak}
@@ -155,7 +159,7 @@ export function QuizPage() {
         <h3>Missed questions</h3>
         {missed.length === 0 ? <p className="muted">Clean sweep.</p> : null}
         {missed.map((m) => (
-          <div key={m.q.id} className="card" style={{ padding: 14, marginBottom: 10 }}>
+          <div key={m.q.id} className="paper-card" style={{ padding: 14, marginBottom: 10 }}>
             <div>{m.q.question}</div>
             <p className="muted">{m.explanation}</p>
             {m.q.sourceDocumentId ? (
@@ -167,10 +171,11 @@ export function QuizPage() {
           Back to hub
         </Link>
       </div>
+      </AppShell>
     );
   }
 
-  if (!q) return <div className="page">Shuffling the deck…</div>;
+  if (!q) return <AppShell><div className="page">Shuffling the deck…</div></AppShell>;
 
   return (
     <GameShell
@@ -185,7 +190,7 @@ export function QuizPage() {
       onPowerup={onPowerup}
     >
       {notice ? <div className="error-banner" style={{ marginBottom: 16 }}>{notice}</div> : null}
-      <div className="card embroidered" style={{ padding: 24 }}>
+      <div className="paper-card" style={{ padding: 24 }}>
         <h2>{q.question}</h2>
         {hint ? <p className="muted">{hint}</p> : null}
         <div style={{ display: "grid", gap: 10, marginTop: 16 }}>

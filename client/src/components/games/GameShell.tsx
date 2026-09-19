@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { AppShell } from "../layout/AppShell";
 import { PowerupBar } from "./PowerupBar";
 import type { PowerupType } from "@shared/types";
 import { FREEZE_SECONDS } from "@shared/constants";
@@ -61,6 +62,7 @@ export function GameShell({
   children: ReactNode;
 }) {
   return (
+    <AppShell>
     <div className="page">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
         <div>
@@ -80,5 +82,6 @@ export function GameShell({
       </div>
       {children}
     </div>
+    </AppShell>
   );
 }

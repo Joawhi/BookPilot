@@ -14,6 +14,7 @@ export function MinigamesPage() {
   return (
     <AppShell>
       <div className="page">
+        <p className="eyebrow">play the paper</p>
         <p className="muted">
           <Link to={`/sets/${id}`}>← Hub</Link>
         </p>
@@ -21,8 +22,8 @@ export function MinigamesPage() {
         <p className="muted">Grown from your PDFs. Freeze Time and Double Down work in every timed game.</p>
         <div className="grid-2" style={{ marginTop: 20 }}>
           {GAMES.map((g) => (
-            <Link key={g.to} to={`/sets/${id}/games/${g.to}`} className="card embroidered" style={{ padding: 18, textDecoration: "none", color: "inherit" }}>
-              <img src="/art/game-match.png" alt="" style={{ width: "100%", borderRadius: 16, border: "2px solid var(--ink)" }} />
+            <Link key={g.to} to={`/sets/${id}/games/${g.to}`} className="paper-card" style={{ padding: 18, textDecoration: "none", color: "inherit" }}>
+              <img src="/art/game-match.png" alt="" style={{ width: "100%", borderRadius: 16 }} />
               <h3>{g.title}</h3>
               <p className="muted">{g.body}</p>
             </Link>

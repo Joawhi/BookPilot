@@ -41,7 +41,8 @@ export function StudySetHubPage() {
   return (
     <AppShell>
       <div className="page">
-        <p className="muted"><Link to="/">Home</Link> / study set</p>
+        <p className="eyebrow">your desk</p>
+        <p className="muted"><Link to="/">Home</Link> / {set.title}</p>
         <h1>{set.title}</h1>
         <p className="muted">{set.documents.length} document{set.documents.length === 1 ? "" : "s"} · generation runs in the background, you can read immediately.</p>
 
@@ -87,10 +88,10 @@ export function StudySetHubPage() {
                 key={c.to}
                 to={locked ? "#" : href}
                 onClick={(e) => locked && e.preventDefault()}
-                className="card embroidered"
+                className="paper-card"
                 style={{ padding: 16, textDecoration: "none", color: "inherit", opacity: locked ? 0.55 : 1 }}
               >
-                <img src={c.img} alt="" style={{ width: "100%", borderRadius: 16, border: "2px solid var(--ink)" }} />
+                <img src={c.img} alt="" style={{ width: "100%", borderRadius: 16 }} />
                 <h3 style={{ marginTop: 12 }}>{c.title}</h3>
                 <p className="muted">{c.body}</p>
                 {locked ? <StatusChip status={c.to === "quiz" ? set.quizStatus : set.gamesStatus} label={c.title} /> : null}

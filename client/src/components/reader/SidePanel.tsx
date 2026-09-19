@@ -12,7 +12,7 @@ export function SidePanel({
 }) {
   return (
     <aside
-      className="card"
+      className="paper-card"
       style={{
         width: 360,
         flexShrink: 0,
@@ -40,7 +40,7 @@ export function PaperList({ papers }: { papers: ReferencePaper[] }) {
   return (
     <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 12 }}>
       {papers.map((p) => (
-        <li key={p.url} className="card" style={{ padding: 12, borderWidth: 2, boxShadow: "none" }}>
+        <li key={p.url} className="paper-card" style={{ padding: 12, boxShadow: "none" }}>
           <a href={p.url} target="_blank" rel="noreferrer">
             <strong>{p.title}</strong>
           </a>

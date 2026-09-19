@@ -43,12 +43,12 @@ export const POWERUP_TYPES = [
 export type PowerupType = (typeof POWERUP_TYPES)[number];
 
 export const PALETTE = {
-  cream: "#F4E8D0",
-  paper: "#FBF3E3",
-  ink: "#2B2118",
-  beet: "#C44536",
-  sunflower: "#E8B923",
-  leaf: "#3D6B3A",
-  deepBlue: "#1E3A5F",
+  cream: "#F3EFE4",
+  paper: "#F8F5EE",
+  ink: "#1E1F3D",
+  beet: "#CB3A32",
+  sunflower: "#F4C53A",
+  leaf: "#5E6E38",
+  deepBlue: "#2F5A85",
   plum: "#7B3B4A",
 } as const;
