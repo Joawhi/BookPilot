@@ -1,0 +1,4 @@
+@media (max-width: 860px) {
+  .login-grid { grid-template-columns: 1fr !important; }
+  .login-art { display: none !important; }
+}

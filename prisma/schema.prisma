@@ -1,0 +1,166 @@
+// BookPilot data model.
+// Default: SQLite (fastest on Replit / local). Switch to PostgreSQL by changing
+// the provider + DATABASE_URL — field types stay compatible.
+//
+// See docs/DATA-MODEL.md for how each table is used.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  createdAt    DateTime @default(now())
+
+  studySets   StudySet[]
+  notes       Note[]
+  gameResults GameResult[]
+}
+
+model StudySet {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// pending | generating | ready | failed
+  quizStatus  String @default("pending")
+  gamesStatus String @default("pending")
+  quizError   String?
+  gamesError  String?
+
+  lastReadDocumentId String?
+  lastReadPage       Int     @default(1)
+  bestScore          Int     @default(0)
+  totalPoints        Int     @default(0)
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents         Document[]
+  notes             Note[]
+  sessions          ReadingSession[]
+  quizQuestions     QuizQuestion[]
+  minigameContents  MinigameContent[]
+  gameResults       GameResult[]
+  concepts          Concept[]
+}
+
+model Document {
+  id                   String   @id @default(uuid())
+  studySetId           String
+  originalName         String
+  storedName           String
+  storagePath          String
+  mimeType             String
+  pageCount            Int      @default(0)
+  /// JSON: PageText[]  — { page: number, text: string }
+  extractedText        String   @default("[]")
+  hasExtractableText   Boolean  @default(true)
+  scanWarning          String?
+  createdAt            DateTime @default(now())
+
+  studySet StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+  notes    Note[]
+}
+
+/// A reading sitting. Ending it writes a recap + collected references.
+model ReadingSession {
+  id          String    @id @default(uuid())
+  studySetId  String
+  documentId  String?
+  recap       String?
+  /// JSON: ReferencePaper[]
+  references  String    @default("[]")
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+
+  studySet StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+}
+
+model Note {
+  id          String   @id @default(uuid())
+  userId      String
+  studySetId  String
+  documentId  String
+  passage     String
+  page        Int
+  explanation String?
+  /// JSON: ReferencePaper[]
+  references  String   @default("[]")
+  flagged     Boolean  @default(false)
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studySet  StudySet  @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+  document  Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model QuizQuestion {
+  id               String @id @default(uuid())
+  studySetId       String
+  question         String
+  /// JSON: string[4]
+  options          String
+  correctIndex     Int
+  explanation      String
+  /// easy | medium | hard
+  difficulty       String @default("medium")
+  sourceDocumentId String?
+  sourcePage       Int?
+  concept          String?
+
+  studySet StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+}
+
+model MinigameContent {
+  id          String   @id @default(uuid())
+  studySetId  String
+  /// match_pairs | fill_blank | true_false | sequence_sort
+  type        String
+  /// JSON payload matching docs/LLM-CONTRACTS.md
+  content     String
+  generatedAt DateTime @default(now())
+
+  studySet StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+
+  @@unique([studySetId, type])
+}
+
+model GameResult {
+  id             String   @id @default(uuid())
+  userId         String
+  studySetId     String
+  /// quiz | match_pairs | fill_blank | true_false | sequence_sort
+  gameType       String
+  score          Int
+  accuracy       Float
+  bestStreak     Int      @default(0)
+  /// JSON: string[]
+  missedConcepts String   @default("[]")
+  createdAt      DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studySet StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+}
+
+/// Per-set concepts. missCount drives "Topics to review" and generation sampling.
+model Concept {
+  id        String @id @default(uuid())
+  studySetId String
+  name      String
+  missCount Int    @default(0)
+  hitCount  Int    @default(0)
+
+  studySet StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+
+  @@unique([studySetId, name])
+}

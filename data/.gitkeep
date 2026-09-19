@@ -1,0 +1,2 @@
+# Persistent runtime data lives here (SQLite + private PDFs).
+# This file keeps the folder in git; contents are ignored.

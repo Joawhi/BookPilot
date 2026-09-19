@@ -1,0 +1,19 @@
+:root {
+  --cream: #f4e8d0;
+  --paper: #fbf3e3;
+  --ink: #2b2118;
+  --ink-soft: #5c4c3d;
+  --beet: #c44536;
+  --beet-deep: #8f2e24;
+  --sunflower: #e8b923;
+  --leaf: #3d6b3a;
+  --leaf-bright: #5a9448;
+  --deep: #1e3a5f;
+  --plum: #7b3b4a;
+  --line: #2b2118;
+  --shadow: 4px 6px 0 rgba(43, 33, 24, 0.18);
+  --radius: 24px;
+  --font-serif: "Fraunces", "Palatino Linotype", Palatino, serif;
+  --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
+  --reader-max: 920px;
+}

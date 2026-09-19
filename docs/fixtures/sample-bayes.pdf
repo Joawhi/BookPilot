@@ -1,0 +1,62 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 9 0 R >> >> >> endobj
+4 0 obj << /Length 576 >> stream
+BT
+/F1 12 Tf
+72 720 Td (BookPilot Sample: Bayesian Inference) Tj
+0 -18 Td (Bayesian inference updates a prior probability distribution) Tj
+0 -18 Td (using a likelihood function derived from observed data.) Tj
+0 -18 Td (The result is a posterior over parameters, which can be used) Tj
+0 -18 Td (for prediction, model comparison, and experimental design.) Tj
+0 -18 Td (A conjugate prior makes the posterior analytically tractable.) Tj
+0 -18 Td (When conjugacy fails, Markov chain Monte Carlo \(MCMC\)) Tj
+0 -18 Td (approximates the posterior by drawing dependent samples.) Tj
+ET
+endstream endobj
+5 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 9 0 R >> >> >> endobj
+6 0 obj << /Length 562 >> stream
+BT
+/F1 12 Tf
+72 720 Td (Evidence and Model Comparison) Tj
+0 -18 Td (The marginal likelihood, also called the evidence, is the) Tj
+0 -18 Td (integral of likelihood times prior over parameter space.) Tj
+0 -18 Td (Bayes factors compare two models by the ratio of evidences.) Tj
+0 -18 Td (Overfitting is penalized because broad priors spread mass) Tj
+0 -18 Td (thinly, lowering the evidence of overly flexible models.) Tj
+0 -18 Td (Information criteria such as WAIC approximate this penalty) Tj
+0 -18 Td (from posterior samples without computing the integral.) Tj
+ET
+endstream endobj
+7 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 8 0 R /Resources << /Font << /F1 9 0 R >> >> >> endobj
+8 0 obj << /Length 476 >> stream
+BT
+/F1 12 Tf
+72 720 Td (Practical Workflow) Tj
+0 -18 Td (1. Specify a generative model and a prior.) Tj
+0 -18 Td (2. Collect data and write the likelihood.) Tj
+0 -18 Td (3. Compute or sample the posterior.) Tj
+0 -18 Td (4. Check posterior predictive simulations.) Tj
+0 -18 Td (5. Compare models and refine the story.) Tj
+0 -18 Td (Confusing point: a p-value is not a posterior probability) Tj
+0 -18 Td (that the null hypothesis is true. They answer different questions.) Tj
+ET
+endstream endobj
+9 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >> endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000253 00000 n 
+0000000880 00000 n 
+0000001006 00000 n 
+0000001619 00000 n 
+0000001745 00000 n 
+0000002272 00000 n 
+trailer << /Size 10 /Root 1 0 R >>
+startxref
+2344
+%%EOF

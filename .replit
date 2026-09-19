@@ -1,0 +1,14 @@
+run = "npm run dev"
+entrypoint = "package.json"
+hidden = [".git", "node_modules", "data"]
+
+[nix]
+channel = "stable-24_05"
+
+[env]
+PORT = "3001"
+
+[languages]
+
+[deployment]
+run = ["sh", "-c", "npx prisma db push && npm run build && npm start"]
