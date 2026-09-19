@@ -137,10 +137,18 @@ button, input, textarea, select {
   border: 3px dashed var(--ink);
   border-radius: 32px;
   background: color-mix(in srgb, var(--paper) 80%, white);
-  padding: 28px;
+  padding: 20px 28px 28px;
   text-align: center;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s ease;
+  overflow: visible;
+}
+
+.dropzone img {
+  display: block;
+  margin: 0 auto 8px;
+  max-height: 240px;
+  object-fit: contain;
 }
 
 .dropzone.active {

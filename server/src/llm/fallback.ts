@@ -97,12 +97,16 @@ export function fallbackQuiz(
     const options = [answer, ...distractors.slice(0, 3)];
     while (options.length < 4) options.push(`none of these (${options.length})`);
     const shuffled = options.slice(0, 4);
-    const correctIndex = 0;
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    }
+    const correctIndex = shuffled.indexOf(answer);
     const page = pages.find((p) => p.text.includes(sentence.slice(0, 40)))?.page ?? null;
     questions.push({
       question: `Which concept is most central to: “${sentence.slice(0, 160)}”?`,
       options: shuffled,
-      correctIndex,
+      correctIndex: correctIndex < 0 ? 0 : correctIndex,
       explanation: `The passage focuses on “${answer}”. ${sentence.slice(0, 180)}`,
       difficulty: questions.length < 3 ? "easy" : questions.length < 7 ? "medium" : "hard",
       sourcePage: page,
