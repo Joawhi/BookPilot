@@ -1,18 +1,27 @@
 import { createRequire } from "node:module";
 import type { PageText } from "../../../shared/types.ts";
+import { itemsToPlainText, type PdfGlyph } from "./pdfText.ts";
 
 const require = createRequire(import.meta.url);
 
 const MIN_CHARS_PER_PAGE = 40;
 const MIN_TOTAL_CHARS = 200;
 
+type PdfjsPage = {
+  getTextContent: () => Promise<{ items: PdfGlyph[] }>;
+  streamTextContent: () => ReadableStream<{ items?: PdfGlyph[] }>;
+};
+
 type Pdfjs = {
-  getDocument: (src: { data: Uint8Array; useSystemFonts?: boolean }) => {
+  getDocument: (src: {
+    data: Uint8Array;
+    useSystemFonts?: boolean;
+    disableFontFace?: boolean;
+    isEvalSupported?: boolean;
+  }) => {
     promise: Promise<{
       numPages: number;
-      getPage: (n: number) => Promise<{
-        getTextContent: () => Promise<{ items: Array<{ str?: string }> }>;
-      }>;
+      getPage: (n: number) => Promise<PdfjsPage>;
     }>;
   };
   GlobalWorkerOptions: { workerSrc: string };
@@ -33,6 +42,26 @@ async function loadPdfjs(): Promise<Pdfjs> {
   return mod;
 }
 
+async function readPageItems(page: PdfjsPage): Promise<PdfGlyph[]> {
+  try {
+    const content = await page.getTextContent();
+    return content.items;
+  } catch {
+    const reader = page.streamTextContent().getReader();
+    const items: PdfGlyph[] = [];
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value?.items) items.push(...value.items);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    return items;
+  }
+}
+
 export async function extractPdfText(buffer: Buffer): Promise<{
   pages: PageText[];
   pageCount: number;
@@ -41,16 +70,17 @@ export async function extractPdfText(buffer: Buffer): Promise<{
 }> {
   const pdfjs = await loadPdfjs();
   const data = new Uint8Array(buffer);
-  const doc = await pdfjs.getDocument({ data, useSystemFonts: true }).promise;
+  const doc = await pdfjs.getDocument({
+    data,
+    useSystemFonts: true,
+    disableFontFace: true,
+    isEvalSupported: false,
+  }).promise;
   const pages: PageText[] = [];
   for (let i = 1; i <= doc.numPages; i += 1) {
     const page = await doc.getPage(i);
-    const content = await page.getTextContent();
-    const text = content.items
-      .map((item) => ("str" in item ? item.str : ""))
-      .join(" ")
-      .replace(/\s+/g, " ")
-      .trim();
+    const items = await readPageItems(page);
+    const text = itemsToPlainText(items);
     pages.push({ page: i, text });
   }
   const total = pages.reduce((n, p) => n + p.text.length, 0);

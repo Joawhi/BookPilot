@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import * as pdfjs from "pdfjs-dist";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+import { getPageTextContent, pdfjs } from "../../lib/pdfjs";
 
 interface Props {
   url: string;
@@ -62,7 +57,7 @@ export function PdfPane({ url, page, scale, onPageCount, onSelect }: Props) {
       if (!ctx) return;
       const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
       await pdfPage.render({ canvasContext: ctx, viewport, canvas, transform }).promise;
-      const textContent = await pdfPage.getTextContent();
+      const textContent = await getPageTextContent(pdfPage);
       const layer = new pdfjs.TextLayer({
         textContentSource: textContent,
         viewport,

@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ override: true }); // reload .env on process restart
 
 const root = process.cwd();
 

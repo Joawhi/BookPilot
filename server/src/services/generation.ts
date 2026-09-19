@@ -118,15 +118,20 @@ type Ctx = Awaited<ReturnType<typeof loadContext>>;
 
 async function generateQuiz(ctx: Ctx) {
   let parsed;
+  let fallbackReason: string | null = null;
   try {
     if (llmEnabled()) {
       const p = quizPrompt(ctx.material, ctx.flagged, ctx.missed);
       parsed = await chatJson(p.system, p.user, quizSchema);
     } else {
+      fallbackReason =
+        "No OPENAI_API_KEY in .env — this quiz is an extractive fill-in-the-blank from the PDF, not the model. Add a key and tap Regenerate.";
       parsed = fallbackQuiz(ctx.pages, ctx.flagged ? ctx.flagged.split("\n") : [], ctx.missed);
     }
   } catch (err) {
+    const message = err instanceof Error ? err.message : "LLM failed";
     console.warn("quiz llm failed, using fallback", err);
+    fallbackReason = `The model call failed (${message.slice(0, 180)}), so this quiz used the extractive fallback. Check OPENAI_API_KEY / OPENAI_BASE_URL and regenerate.`;
     parsed = fallbackQuiz(ctx.pages, ctx.flagged ? ctx.flagged.split("\n") : [], ctx.missed);
   }
   await prisma.quizQuestion.deleteMany({ where: { studySetId: ctx.set.id } });
@@ -148,7 +153,7 @@ async function generateQuiz(ctx: Ctx) {
   }
   await prisma.studySet.update({
     where: { id: ctx.set.id },
-    data: { quizStatus: "ready", quizError: null },
+    data: { quizStatus: "ready", quizError: fallbackReason },
   });
 }
 

@@ -27,6 +27,7 @@ export function QuizPage() {
   const [missConcepts, setMissConcepts] = useState<string[]>([]);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const timer = useGameTimer(QUIZ_SECONDS);
   const grading = useRef(false);
 
@@ -36,6 +37,7 @@ export function QuizPage() {
       .then((p) => {
         setQuestions(p.questions);
         setInventory(p.powerups);
+        setNotice(p.notice ?? null);
       })
       .catch((err) => setError(err.body?.error ?? "Quiz is not ready yet."));
   }, [id]);
@@ -182,6 +184,7 @@ export function QuizPage() {
       powerupsDisabled={Boolean(used || feedback)}
       onPowerup={onPowerup}
     >
+      {notice ? <div className="error-banner" style={{ marginBottom: 16 }}>{notice}</div> : null}
       <div className="card embroidered" style={{ padding: 24 }}>
         <h2>{q.question}</h2>
         {hint ? <p className="muted">{hint}</p> : null}

@@ -52,6 +52,11 @@ export function HomePage() {
       <div className="page">
         <h1>Your harvest of readings</h1>
         <p className="muted">Drop one or more PDFs to start learning. Quiz and games cook in the background while you read.</p>
+        {home && !home.llmEnabled ? (
+          <div className="error-banner" style={{ marginBottom: 16 }}>
+            No model key in <code>.env</code> (<code>OPENAI_API_KEY</code>). Quiz and explanations use a local extractive fallback until you add one and restart the server.
+          </div>
+        ) : null}
 
         <label
           className={`dropzone ${active ? "active" : ""}`}

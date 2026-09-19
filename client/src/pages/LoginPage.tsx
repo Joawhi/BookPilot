@@ -2,14 +2,15 @@ import { FormEvent, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { ApiError } from "../api/client";
+import { LOCAL_DEV_USER } from "@shared/devAuth";
 
 export function LoginPage() {
   const { user, login, register } = useAuth();
   const location = useLocation();
   const isSignup = location.pathname === "/signup";
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState(LOCAL_DEV_USER.email);
+  const [password, setPassword] = useState(LOCAL_DEV_USER.password);
+  const [displayName, setDisplayName] = useState(LOCAL_DEV_USER.displayName);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 

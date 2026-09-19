@@ -2,6 +2,7 @@ import path from "node:path";
 import express from "express";
 import cors from "cors";
 import { config } from "./config.ts";
+import { llmEnabled } from "./llm/index.ts";
 import { requireAuth } from "./middleware/auth.ts";
 import { errorHandler } from "./middleware/error.ts";
 import { authRouter } from "./routes/auth.ts";
@@ -20,7 +21,7 @@ export function createApp() {
   app.use(express.json({ limit: "2mb" }));
 
   app.get("/api/health", (_req, res) => {
-    res.json({ ok: true, llm: Boolean(config.openaiKey) });
+    res.json({ ok: true, llm: llmEnabled() });
   });
 
   app.use("/api/auth", authRouter);

@@ -82,6 +82,7 @@ export interface HomePayload {
   studySets: StudySetSummary[];
   continueReading: ContinueReading | null;
   confusionPoints: ConfusionPoint[];
+  llmEnabled: boolean;
 }
 
 export interface NoteRecord {
@@ -135,6 +136,7 @@ export interface QuizQuestionPublic {
 export interface QuizStartPayload {
   questions: QuizQuestionPublic[];
   powerups: Record<PowerupType, number>;
+  notice: string | null;
 }
 
 export interface QuizGradeRequest {

@@ -18,7 +18,7 @@ DTO shapes live in `shared/types.ts`.
 
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/home` | `HomePayload` — sets, continue reading, confusion points |
+| GET | `/home` | `HomePayload` — sets, continue reading, confusion points, `llmEnabled` |
 | GET | `/study-sets` | list |
 | POST | `/study-sets` | `multipart/form-data` field `files` (1–5 PDFs). Creates the set, extracts text, enqueues generation. 400 `scanned_pdf` if nothing extractable. |
 | GET | `/study-sets/:id` | `StudySetDetail` including status chips |

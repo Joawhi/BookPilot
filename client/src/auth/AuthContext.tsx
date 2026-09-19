@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { apiGet, apiPost, getToken, setToken } from "../api/client";
+import { LOCAL_DEV_USER } from "@shared/devAuth";
 import type { AuthResponse, UserPublic } from "@shared/types";
 
 interface AuthState {
@@ -17,15 +18,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      setReady(true);
-      return;
-    }
-    apiGet<UserPublic>("/api/auth/me")
-      .then(setUser)
-      .catch(() => setToken(null))
-      .finally(() => setReady(true));
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = getToken();
+        if (token) {
+          try {
+            const me = await apiGet<UserPublic>("/api/auth/me");
+            if (!cancelled) setUser(me);
+            return;
+          } catch {
+            setToken(null);
+          }
+        }
+        let res: AuthResponse;
+        try {
+          res = await apiPost<AuthResponse>("/api/auth/login", {
+            email: LOCAL_DEV_USER.email,
+            password: LOCAL_DEV_USER.password,
+          });
+        } catch {
+          try {
+            res = await apiPost<AuthResponse>("/api/auth/register", {
+              email: LOCAL_DEV_USER.email,
+              password: LOCAL_DEV_USER.password,
+              displayName: LOCAL_DEV_USER.displayName,
+            });
+          } catch {
+            res = await apiPost<AuthResponse>("/api/auth/login", {
+              email: LOCAL_DEV_USER.email,
+              password: LOCAL_DEV_USER.password,
+            });
+          }
+        }
+        if (cancelled) return;
+        setToken(res.token);
+        setUser(res.user);
+      } catch {
+        setToken(null);
+      } finally {
+        if (!cancelled) setReady(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const value = useMemo<AuthState>(

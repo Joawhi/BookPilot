@@ -3,6 +3,7 @@ import { prisma } from "../db.ts";
 import { toSetSummary } from "../db/map.ts";
 import { asyncHandler } from "../middleware/error.ts";
 import type { AuthedRequest } from "../middleware/auth.ts";
+import { llmEnabled } from "../llm/index.ts";
 import type { ConfusionPoint, ContinueReading, HomePayload } from "../../../shared/types.ts";
 
 export const homeRouter = Router();
@@ -55,6 +56,7 @@ homeRouter.get(
       studySets: studySets.map(toSetSummary),
       continueReading,
       confusionPoints,
+      llmEnabled: llmEnabled(),
     };
     res.json(payload);
   }),

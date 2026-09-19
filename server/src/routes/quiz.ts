@@ -49,7 +49,7 @@ quizRouter.get(
         hintSnippet: page?.text.slice(0, 280) ?? null,
       };
     });
-    const payload: QuizStartPayload = { questions, powerups: startingPowerups() };
+    const payload: QuizStartPayload = { questions, powerups: startingPowerups(), notice: set.quizError };
     res.json(payload);
   }),
 );

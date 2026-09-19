@@ -25,7 +25,7 @@ Set `OPENAI_BASE_URL` and `OPENAI_MODEL`. Groq example:
 ```
 OPENAI_API_KEY=gsk_...
 OPENAI_BASE_URL=https://api.groq.com/openai/v1
-OPENAI_MODEL=llama-3.3-70b-versatile
+OPENAI_MODEL=openai/gpt-oss-20b
 ```
 
 `server/src/llm/index.ts` already speaks the OpenAI chat-completions dialect.

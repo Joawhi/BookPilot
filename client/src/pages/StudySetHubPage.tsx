@@ -53,6 +53,12 @@ export function StudySetHubPage() {
           </button>
         </div>
 
+        {set.quizError ? (
+          <div className="error-banner" style={{ marginBottom: 16 }}>
+            {set.quizError}
+          </div>
+        ) : null}
+
         {set.documents.some((d) => !d.hasExtractableText) ? (
           <div className="error-banner" style={{ marginBottom: 16 }}>
             Some files look scanned and have no text layer. They won’t feed the quiz until you add an OCR’d copy.
